@@ -73,18 +73,6 @@ pend_00_22_boHland <- pend_00_22_ssb_boHland |> select(arb_kom = arbeidsstedskom
 ```
 
 ```{r}
-fct_collapse(
-  "Haugesund" = "Haugesund", 
-  "Sauda" = "Sauda", 
-  "Bokn" = "Bokn", 
-  "Tysvær" = "Tysvær", 
-  "Karmøy" = "Karmøy", 
-  "Vindafjord_Ølen" = c("Vindafjord", "Vindafjord (1965-2005)"", "Ølen (2002-2005)"),
-"other_level" = "Andre"
-  )))
-```
-
-```{r}
 # med hensyn på arbeidskommune
 pend_00_22_arbHland$arb_kom <- fct(pend_00_22_arbHland$arb_kom)
 pend_00_22_boHland$bo_kom <- fct(pend_00_22_boHland$bo_kom)
@@ -93,7 +81,11 @@ pend_00_22_arbHland$arb_kom <- fct_collapse(pend_00_22_arbHland$arb_kom, Haugesu
                                       Sauda = "Sauda",
                                       Bokn = "Bokn",
                                       Tysvær = "Tysvær",
-                                      Karmøy = "Karmøy",
+                                      Karmøy = "Karmøy", 
+                                      Etne = c("Etne", "Etne (-2019)"), 
+                                      Sveio = c("Sveio", "Sveio (-2019)"), 
+                                      
+                                
                                       Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
 
@@ -102,7 +94,40 @@ pend_00_22_arbHland$bo_kom <- fct_collapse(pend_00_22_arbHland$bo_kom, Haugesund
                                       Sauda = "Sauda",
                                       Bokn = "Bokn",
                                       Tysvær = "Tysvær",
-                                      Karmøy = "Karmøy",
+                                      Karmøy = "Karmøy", 
+                                      Etne = c("Etne", "Etne (-2019)"), 
+                                      Sveio = c("Sveio", "Sveio (-2019)"), 
+                                      
+                                
                                       Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
+```
+
+```{r}
+dim(pend_00_22_boHland)
+```
+
+```{r}
+# eval: false
+pend_00_22_arbHland <- pend_00_22_arbHland |>
+group_by(aar, bo_kom, arb_kom) |>
+summarise(pendlere = sum(pendlere), .groups = "drop")
+
+```
+
+```{r}
+#Har vi gjort ting riktig skal vi ha:
+dim(pend_00_22_arbHland)
+```
+
+```{r}
+# eval: false
+pend_00_22_boHland <- pend_00_22_boHland |>
+group_by(aar, bo_kom, arb_kom) |>
+summarise(pendlere = sum(pendlere), .groups = "drop")
+
+```
+
+```{r}
+dim(pend_00_22_boHland)
 ```
