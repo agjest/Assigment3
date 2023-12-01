@@ -76,6 +76,7 @@ pend_00_22_boHland <- pend_00_22_ssb_boHland |> select(arb_kom = arbeidsstedskom
 # med hensyn på arbeidskommune
 pend_00_22_arbHland$arb_kom <- fct(pend_00_22_arbHland$arb_kom)
 pend_00_22_boHland$bo_kom <- fct(pend_00_22_boHland$bo_kom)
+pend_00_22_boHland$arb_kom <- fct(pend_00_22_boHland$arb_kom)
 
 pend_00_22_arbHland$arb_kom <- fct_collapse(pend_00_22_arbHland$arb_kom, Haugesund = "Haugesund",
                                       Sauda = "Sauda",
@@ -130,4 +131,9 @@ summarise(pendlere = sum(pendlere), .groups = "drop")
 
 ```{r}
 dim(pend_00_22_boHland)
+```
+
+```{r}
+print(pend_00_22_boHland, n = 5)
+
 ```
