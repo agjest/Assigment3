@@ -180,5 +180,57 @@ dim(pmat_long)
 ```
 
 ```{r}
-print(pmat_long, n = 5)
+pmat_long |> 
+  head(n = 5)
+```
+
+```{r}
+pmat_long <- pmat_long |> 
+  group_by(bo_kom, aar) |> 
+  mutate(
+    bo_prosent = round((pendlere/sum(pendlere))*100, digits = 1)
+  ) |> 
+  ungroup()
+pmat_long <- pmat_long |> 
+  group_by(arb_kom, aar) |> 
+  mutate(
+    arb_prosent = round((pendlere/sum(pendlere))*100, digits = 1)
+  )
+```
+
+```{r}
+ordKom <- c("bo_kom" , "Haugesund", "Karmøy", "Tysvær",
+"Sveio", "Bokn", "Vindafjord_Ølen", "Sauda",
+"Etne", "Andre")
+# Filtrer datasettet for år 2000 og transformer det til en bredere format
+p2000 <- pmat_long %>%
+  filter(aar == 2000) %>%
+  select(bo_kom, arb_kom, pendlere) %>%
+  pivot_wider(names_from = arb_kom, values_from = pendlere, names_sort = TRUE) %>%
+  mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(bo_kom) %>%
+  select(
+    "Bo kom. \\ Arb. kom" = bo_kom,
+    all_of(ordKom),
+    )
+
+# Skriv ut 'p2000' for å bekrefte endringene
+print(p2000)
+
+```
+
+```{r}
+#| label: tbl-p2000
+#| tbl-cap: "Pendlematrise for Haugalandet år 2000."
+p2000 |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
 ```
