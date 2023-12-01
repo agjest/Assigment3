@@ -90,7 +90,7 @@ pend_00_22_arbHland$arb_kom <- fct_collapse(pend_00_22_arbHland$arb_kom, Haugesu
                                       Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
 
-#med hensyn på bo kommune
+#med hensyn på arb kommune
 pend_00_22_arbHland$bo_kom <- fct_collapse(pend_00_22_arbHland$bo_kom, Haugesund = "Haugesund",
                                       Sauda = "Sauda",
                                       Bokn = "Bokn",
@@ -102,6 +102,41 @@ pend_00_22_arbHland$bo_kom <- fct_collapse(pend_00_22_arbHland$bo_kom, Haugesund
                                 
                                       Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
+
+####################
+
+
+
+pend_00_22_boHland$arb_kom <- fct_collapse(pend_00_22_boHland$arb_kom, Haugesund = "Haugesund",
+                                      Sauda = "Sauda",
+                                      Bokn = "Bokn",
+                                      Tysvær = "Tysvær",
+                                      Karmøy = "Karmøy", 
+                                      Etne = c("Etne", "Etne (-2019)"), 
+                                      Sveio = c("Sveio", "Sveio (-2019)"), 
+                                      
+                                
+                                      Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
+                                      other_level = "Andre")
+
+#med hensyn på bo kommune
+pend_00_22_boHland$bo_kom <- fct_collapse(pend_00_22_boHland$bo_kom, Haugesund = "Haugesund",
+                                      Sauda = "Sauda",
+                                      Bokn = "Bokn",
+                                      Tysvær = "Tysvær",
+                                      Karmøy = "Karmøy", 
+                                      Etne = c("Etne", "Etne (-2019)"), 
+                                      Sveio = c("Sveio", "Sveio (-2019)"), 
+                                      
+                                
+                                      Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
+                                      other_level = "Andre")
+
+
+
+
+
+
 ```
 
 ```{r}
@@ -135,14 +170,15 @@ summarise(pendlere = sum(pendlere), .groups = "drop")
 ```
 
 ```{r}
-
-pmat_long <- pend_00_22_arbHland |>
-  as.character("arb_kom", "bo_kom") |> 
+pmat_long <- pend_00_22_arbHland |> 
   full_join(
     pend_00_22_boHland,
     by = c("aar", "arb_kom", "bo_kom", "pendlere")
   ) |> 
-  ungroup()
-
+  ungroup() 
 dim(pmat_long)
+```
+
+```{r}
+print(pmat_long, n = 5)
 ```
