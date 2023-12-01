@@ -2,6 +2,7 @@
 title: "Assigment3"
 format: html
 editor: visual
+language: nb.yaml
 ---
 
 ```{r}
