@@ -1,0 +1,62 @@
+---
+title: "Assigment3"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: setup
+#| echo: false
+library(tidyverse)
+library(tidyselect)
+library(lubridate)
+library(PxWebApiData)
+library(flextable)
+```
+
+## Innledning
+
+## Henta data fra SSB
+
+```{r}
+unemp99to02 <- ApiData(
+  "http://data.ssb.no/api/v0/en/table/10540",
+  # Have not been able to specify more complex regions
+  Region = list("11*"),
+  Tid = c(paste(
+    rep(1999:2002, each = 12), 
+    "M",
+    sprintf("%02d", 1:12), 
+    sep = "")
+    )
+  )
+```
+
+```{r}
+#Get more info about table
+ApiData(
+"http://data.ssb.no/api/v0/en/table/03321",
+returnApiQuery = TRUE
+) 
+```
+
+```{r}
+#| cache: true
+#Bokommuner Haugalandet
+pend_00_22_ssb_arbHland <- PxWebApiData::ApiData12(
+  urlToData = as.character(03321),
+  ArbstedKomm = list("*"),
+  Bokommuen = c("1106", "1135", "1145", "1149", "1154", "1159", "1160", "4611", "4612", "1211", "1216"),
+  Tid = as.character(2000:2022))
+```
+
+```{r}
+#| cache: true
+#Arbeidskommuner Haugalandet
+pend_00_22_ssb_arbHland <- PxWebApiData::ApiData12(
+  urlToData = as.character(03321),
+  ArbstedKomm = c("1106", "1135", "1145", "1149", "1154", "1159", "1160", "4611", "4612", "1211", "1216"),
+  Bokommuen = list("*"),
+  Tid = as.character(2000:2022)
+)
+```
