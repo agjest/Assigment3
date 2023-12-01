@@ -64,12 +64,12 @@ pend_00_22_ssb_arbHland <- PxWebApiData::ApiData12(
 
 ```{r}
 #Lager egen redusert versjon av satasettet(arbeidskommuner)
-pend_00_22_arbHland <- pend_00_22_ssb_arbHland |> select(arb_kom = arbeidsstedskommune, bo_kom = bostedskommune, aar = år, pendlere = value)
+pend_00_22_arbHland <- pend_00_22_ssb_arbHland |> select(arb_kom = arbeidsstedskommune, bo_kom = bostedskommune, aar = 4, pendlere = value)
 ```
 
 ```{r}
 #Lager egen redusert versjon av satasettet(bokommuner)
-pend_00_22_boHland <- pend_00_22_ssb_boHland |> select(arb_kom = arbeidsstedskommune, bo_kom = bostedskommune, aar = år, pendlere = value)
+pend_00_22_boHland <- pend_00_22_ssb_boHland |> select(arb_kom = arbeidsstedskommune, bo_kom = bostedskommune, aar = 4, pendlere = value)
 ```
 
 ```{r}
@@ -122,18 +122,27 @@ dim(pend_00_22_arbHland)
 ```
 
 ```{r}
-# eval: false
-pend_00_22_boHland <- pend_00_22_boHland |>
-group_by(aar, bo_kom, arb_kom) |>
-summarise(pendlere = sum(pendlere), .groups = "drop")
-
-```
-
-```{r}
-dim(pend_00_22_boHland)
-```
-
-```{r}
 print(pend_00_22_boHland, n = 5)
 
+```
+
+```{r}
+# nå gjør vi det samme for bo
+# eval: false
+pend_00_22_boHland <- pend_00_22_boHland |>
+group_by(aar, arb_kom, bo_kom) |>
+summarise(pendlere = sum(pendlere), .groups = "drop")
+```
+
+```{r}
+
+pmat_long <- pend_00_22_arbHland |>
+  as.character("arb_kom", "bo_kom") |> 
+  full_join(
+    pend_00_22_boHland,
+    by = c("aar", "arb_kom", "bo_kom", "pendlere")
+  ) |> 
+  ungroup()
+
+dim(pmat_long)
 ```
