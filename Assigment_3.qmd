@@ -195,7 +195,7 @@ pmat_long <- pmat_long |>
   group_by(arb_kom, aar) |> 
   mutate(
     arb_prosent = round((pendlere/sum(pendlere))*100, digits = 1)
-  )
+  ) |> ungroup()
 ```
 
 ```{r}
@@ -214,8 +214,44 @@ p2000 <- pmat_long %>%
     all_of(ordKom),
     )
 
-# Skriv ut 'p2000' for å bekrefte endringene
-print(p2000)
+
+
+```
+
+```{r}
+p2000_percent <- pmat_long %>%
+  filter(aar == 2000) %>%
+  group_by(bo_kom) %>%
+  mutate(total_pendlere = sum(pendlere)) %>%
+  ungroup() %>%
+  mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
+  select(bo_kom, arb_kom, bo_percent) %>%
+  pivot_wider(names_from = arb_kom, values_from = bo_percent, names_sort = TRUE) %>%
+  mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(bo_kom) %>%
+  select(
+    "Bo kom. \\ Arb. kom" = bo_kom,
+    all_of(ordKom),
+    )
+
+```
+
+```{r}
+p2000_arb_percent <- pmat_long %>%
+  filter(aar == 2000) %>%
+  group_by(arb_kom) %>%
+  mutate(total_arb = sum(pendlere)) %>%
+  ungroup() %>%
+  mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
+  select(arb_kom, bo_kom, arb_percent) %>%
+  pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
+  mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(arb_kom) |> 
+  select(-arb_kom)
+
+
+names(p2000_arb_percent)[1] <- "Bo kom. \\ Arb. kom"
+
 
 ```
 
@@ -234,3 +270,54 @@ height_all(height = 5, part = "all", unit = "mm") |>
 padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
 theme_booktabs()
 ```
+
+```{r}
+#| label: tbl-p2000
+#| tbl-cap: "Pendlematrise for Haugalandet år 2000."
+p2000_percent |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+```{r}
+#| label: tbl-p2000
+#| tbl-cap: "Pendlematrise for Haugalandet år 2000."
+p2000_percent |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+Spørsmål
+Spørsmål vedrørende pendle/andels-matrisene for 2000
+
+1\.
+Hvor mange pendlet fra Haugesund til Vindafjord?
+10
+2.
+Hvor mange pendlet fra Bokn til Sveio?
+3.
+Hvor stor andel av arbeidstakerene som bodde i Karmøy kommune i 2000 jobbet i Bokn kommune?
+4.
+Hvor stor andel av arbeidstakerene som bodde i Bokn kommune i 2000 jobbet i Karmøy kommune?
+5.
+Hvor stor andel av arbeidstakerne som jobbet i Sveio i 2000 bodde i Haugesund kommune?
+6.
+Hvor stor andel av arbeidstakerne som jobbet i Sveio i 2000 bodde i Tysvær kommune?
+7.
+Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2000 bodde i Vindafjord kommune?
