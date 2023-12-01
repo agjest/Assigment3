@@ -43,7 +43,7 @@ returnApiQuery = TRUE
 ```{r}
 #| cache: true
 #Bokommuner Haugalandet
-pend_00_22_ssb_arbHland <- PxWebApiData::ApiData12(
+pend_00_22_ssb_boHland <- PxWebApiData::ApiData12(
   urlToData = as.character(03321),
   ArbstedKomm = list("*"),
   Bokommuen = c("1106", "1135", "1145", "1149", "1154", "1159", "1160", "4611", "4612", "1211", "1216"),
@@ -59,4 +59,8 @@ pend_00_22_ssb_arbHland <- PxWebApiData::ApiData12(
   Bokommuen = list("*"),
   Tid = as.character(2000:2022)
 )
+```
+
+```{r}
+pend_00_22_arbHland <- pend_00_22_ssb_arbHland |> select()
 ```
