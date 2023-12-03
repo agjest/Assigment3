@@ -603,6 +603,7 @@ pmat_long |>
 ```
 
 ```{r}
+#Andel av dem som jobber i Haugesund som bor i de ulike kommunene på Haugalandet. Vi ser utviklingen for perioden 2000-2022. Det er andel av total arbeidsstyrke som vises på vertikal akse. Internpendling og pendling fra Karmøy er utelatt for ikke å dominere bildet
 pmat_long |>
 filter(arb_kom == "Haugesund" & !bo_kom %in% c("Haugesund", "Karmøy")) |>
 mutate(
@@ -634,3 +635,77 @@ legend.key.size = unit(2,"line"),
 legend.position = "bottom"
 )
 ```
+
+```{r}
+pmat_long |>
+  filter(arb_kom == "Haugesund") |>
+  mutate(
+    år = ymd(str_c(aar, "12", "31")),
+    `Bo andel` = arb_percent,
+    `Bo kom.` = fct(as.character(bo_kom), levels = ordKom[!ordKom %in% c("bo_kom")])
+  ) |>
+  ggplot(aes(x = år, y = `Bo andel`, color = `Bo kom.`, linetype = `Bo kom.`, group = `Bo kom.`)) +
+  geom_line(linewidth = .8) +
+  scale_fill_discrete(ordKom[!ordKom %in% c("bo_kom")]) +
+  guides(
+    colour = guide_legend(title = "Bo andel", title.position = "top"),
+    linetype = guide_legend(title = "Bo andel", title.position = "top")
+  ) + 
+  theme(
+    legend.key.size = unit(2,"line"),
+    legend.position = "bottom"
+  )
+```
+
+Oppgave
+Lag tilsvarende plot som det ovenfor, men for utviklingen for dem som bor i kommunene Haugesund,
+Karmøy, Tysvær og Bokn.
+Det såkalte T-sambandet åpnet i 2013.
+Bompengeinnkreving ble avviklet i 2021.
+Diskuter ut fra tabellene og plottene dere laget ovenfor om det er mulig å se noen effekt på pendlemønsteret mellom de fire kommunene fra dette prosjektet (T-sambandet).
+
+```{r}
+#Tilsvarende plot for de som bor i kommunene Haugesund, Bokn, Tysvær og Karmøy.
+pmat_long |>
+  filter(arb_kom == "Haugesund" & bo_kom %in% c("Haugesund", "Karmøy", "Tysvær", "Bokn")) |>
+  mutate(
+    år = ymd(str_c(aar, "12", "31")),
+    `Bo andel` = arb_percent,
+    `Bo kom.` = fct(as.character(bo_kom), levels = unique(c("Bokn", "Haugesund", "Karmøy", "Tysvær")))
+  ) |>
+  ggplot(aes(x = år, y = `Bo andel`, color = `Bo kom.`, linetype = `Bo kom.`, group = `Bo kom.`)) +
+  geom_line(linewidth = .8) +
+  scale_fill_discrete(unique(c("Haugesund", "Karmøy", "Tysvær", "Bokn"))) +
+  guides(
+    colour = guide_legend(title = "Bo andel", title.position = "top"),
+    linetype = guide_legend(title = "Bo andel", title.position = "top")
+  ) +
+  theme(
+    legend.key.size = unit(2, "line"),
+    legend.position = "bottom"
+  )
+```
+
+```{r}
+#Tilsvarende plot for de som bor i kommunene Haugesund, Bokn, Tysvær og Karmøy.
+pmat_long |>
+  filter(arb_kom == "Haugesund" & bo_kom %in% c("Tysvær", "Bokn")) |>
+  mutate(
+    år = ymd(str_c(aar, "12", "31")),
+    `Bo andel` = arb_percent,
+    `Bo kom.` = fct(as.character(bo_kom), levels = unique(c("Tysvær", "Bokn")))
+  ) |>
+  ggplot(aes(x = år, y = `Bo andel`, color = `Bo kom.`, linetype = `Bo kom.`, group = `Bo kom.`)) +
+  geom_line(linewidth = .8) +
+  scale_fill_discrete(unique(c("Tysvær", "Bokn"))) +
+  guides(
+    colour = guide_legend(title = "Bo andel", title.position = "top"),
+    linetype = guide_legend(title = "Bo andel", title.position = "top")
+  ) +
+  theme(
+    legend.key.size = unit(2, "line"),
+    legend.position = "bottom"
+  )
+```
+
+Svar; man ser tilnærmet lik ingen endring i fordelingen pendlere i forhold til aviklingen av t-sambandet i 2021, hvor vi heller ikke ser en markant endring da t-sambandet ble innført i 2013.
