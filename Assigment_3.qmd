@@ -188,13 +188,13 @@ pmat_long |>
 pmat_long <- pmat_long |> 
   group_by(bo_kom, aar) |> 
   mutate(
-    bo_prosent = round((pendlere/sum(pendlere))*100, digits = 1)
+    bo_percent = round((pendlere/sum(pendlere))*100, digits = 1)
   ) |> 
   ungroup()
 pmat_long <- pmat_long |> 
   group_by(arb_kom, aar) |> 
   mutate(
-    arb_prosent = round((pendlere/sum(pendlere))*100, digits = 1)
+    arb_percent = round((pendlere/sum(pendlere))*100, digits = 1)
   ) |> ungroup()
 ```
 
@@ -581,14 +581,15 @@ Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2011 bodde i Karmøy 
 15,8%
 
 ```{r}
+# Figur 1: Andel av de som jobber i Haugesund som bor i de ulike kommunene på Haugalandet. Viser utviklingen for perioden 2000-2022. Det er andel av total arbeidsstyrke som vises på vertikal akse.
 pmat_long |>
   filter(arb_kom == "Haugesund") |>
   mutate(
     år = ymd(str_c(aar, "12", "31")),
-    Bo andel = arb_percent,
-    Bo kom. = fct(as.character(bo_kom), levels = ordKom[!ordKom %in% c("bo_kom")])
+    `Bo andel` = arb_percent,
+    `Bo kom.` = fct(as.character(bo_kom), levels = ordKom[!ordKom %in% c("bo_kom")])
   ) |>
-  ggplot(aes(x = år, y = Bo andel, color = Bo kom., linetype = Bo kom., group = Bo kom.)) +
+  ggplot(aes(x = år, y = `Bo andel`, color = `Bo kom.`, linetype = `Bo kom.`, group = `Bo kom.`)) +
   geom_line(linewidth = .8) +
   scale_fill_discrete(ordKom[!ordKom %in% c("bo_kom")]) +
   guides(
@@ -599,9 +600,37 @@ pmat_long |>
     legend.key.size = unit(2,"line"),
     legend.position = "bottom"
   )
-  ) + 
-  theme(
-    legend.key.size = unit(2,"line"),
-    legend.position = "bottom"
-  )
+```
+
+```{r}
+pmat_long |>
+filter(arb_kom == "Haugesund" & !bo_kom %in% c("Haugesund", "Karmøy")) |>
+mutate(
+# setter 31/12 siden pendledataene er for 4. kvartal
+år = ymd(str_c(aar, "12", "31")),
+`Bo andel` = arb_percent,
+`Bo kom.` = fct(as.character(bo_kom, levels = ordKom[!ordKom %in% c("bo_kom", "Haugesund", "Karmøy")]))
+) |>
+ggplot(aes(x = år,
+y = `Bo andel`,
+color = `Bo kom.`,
+linetype = `Bo kom.`,
+group = `Bo kom.`)
+) +
+geom_line(linewidth = .8) +
+scale_fill_discrete(ordKom[!ordKom %in% c("bo_kom", "Haugesund", "Karmøy")]) +
+guides(
+colour = guide_legend(
+title = "Bo andel",
+title.position = "top"
+),
+linetype = guide_legend(
+title = "Bo andel",
+title.position = "top"
+)
+) +
+theme(
+legend.key.size = unit(2,"line"),
+legend.position = "bottom"
+)
 ```
