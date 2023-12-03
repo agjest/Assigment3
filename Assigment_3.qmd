@@ -247,7 +247,7 @@ p2000_arb_percent <- pmat_long %>%
   pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
   mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
   arrange(arb_kom) |> 
-  select(-arb_kom)
+  select(-arb_kom, all_of(ordKom))
 
 
 names(p2000_arb_percent)[1] <- "Arb. kom // bo. kom"
@@ -256,8 +256,7 @@ names(p2000_arb_percent)[1] <- "Arb. kom // bo. kom"
 ```
 
 ```{r}
-#| label: tbl-p2000
-#| tbl-cap: "Pendlematrise for Haugalandet år 2000."
+
 p2000 |>
 flextable() |>
 # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
@@ -272,8 +271,7 @@ theme_booktabs()
 ```
 
 ```{r}
-#| label: tbl-p2000_percent
-#| tbl-cap: "Pendlematrise for Haugalandet år 2000."
+
 p2000_percent |>
 flextable() |>
 # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
@@ -288,8 +286,7 @@ theme_booktabs()
 ```
 
 ```{r}
-#| label: tbl-p2000_arb_percent
-#| tbl-cap: "Pendlematrise for Haugalandet år 2000."
+
 p2000_arb_percent |>
 flextable() |>
 # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
@@ -339,3 +336,272 @@ Hvor stor andel av arbeidstakerne som jobbet i Sveio i 2000 bodde i Tysvær komm
 Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2000 bodde i Vindafjord kommune?
 
 3.2%
+
+```{r}
+p2012 <- pmat_long %>%
+  filter(aar == 2012) %>%
+  select(bo_kom, arb_kom, pendlere) %>%
+  pivot_wider(names_from = arb_kom, values_from = pendlere, names_sort = TRUE) %>%
+  mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(bo_kom) %>%
+  select(
+    "Bo kom. \\ Arb. kom" = bo_kom,
+    all_of(ordKom),
+    )
+p2012_percent <- pmat_long %>%
+  filter(aar == 2012) %>%
+  group_by(bo_kom) %>%
+  mutate(total_pendlere = sum(pendlere)) %>%
+  ungroup() %>%
+  mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
+  select(bo_kom, arb_kom, bo_percent) %>%
+  pivot_wider(names_from = arb_kom, values_from = bo_percent, names_sort = TRUE) %>%
+  mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(bo_kom) %>%
+  select(
+    "bo. kom // Arb. kom" = bo_kom,
+    all_of(ordKom),
+    )
+p2012_arb_percent <- pmat_long %>%
+  filter(aar == 2012) %>%
+  group_by(arb_kom) %>%
+  mutate(total_arb = sum(pendlere)) %>%
+  ungroup() %>%
+  mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
+  select(arb_kom, bo_kom, arb_percent) %>%
+  pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
+  mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(arb_kom) |> 
+  select(-arb_kom)
+
+
+names(p2012_arb_percent)[1] <- "Arb. kom // bo. kom"
+```
+
+```{r}
+
+p2012 |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+```{r}
+
+p2012_percent |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+```{r}
+
+p2012_arb_percent |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+1\.
+Hvor mange pendlet fra Tysvær til Karmøy?
+
+421
+2.
+Hvor mange pendlet fra Karmøy til Tysvær?
+
+569
+3.
+Hvor mange pendlet fra Bokn til Karmøy?
+
+11
+4.
+Hvor mange pendlet fra Karmøy til Bokn?
+
+30
+5.
+Hvor mange pendlet fra Haugesund til Karmøy?
+
+2077
+6.
+Hvor mange pendlet fra Karmøy til Haugesund?
+
+5201
+7.
+Hvor stor andel av arbeidstakerene som bodde i Sveio kommune i 2012 jobbet i Tysvær kommune?
+
+4,7%
+8.
+Hvor stor andel av arbeidstakerene som bodde i Tysvær kommune i 2012 jobbet i Karmøy kommune?
+
+7,7 %
+9.
+Hvor stor andel av arbeidstakerne som jobbet i Karmøy i 20112bodde i Haugesund kommune?
+
+23,7%
+10.
+Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2012 bodde i Karmøy kommune?
+
+13,9%
+
+```{r}
+p2022 <- pmat_long %>%
+  filter(aar == 2022) %>%
+  select(bo_kom, arb_kom, pendlere) %>%
+  pivot_wider(names_from = arb_kom, values_from = pendlere, names_sort = TRUE) %>%
+  mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(bo_kom) %>%
+  select(
+    "Bo kom. \\ Arb. kom" = bo_kom,
+    all_of(ordKom),
+    )
+p2022_percent <- pmat_long %>%
+  filter(aar == 2022) %>%
+  group_by(bo_kom) %>%
+  mutate(total_pendlere = sum(pendlere)) %>%
+  ungroup() %>%
+  mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
+  select(bo_kom, arb_kom, bo_percent) %>%
+  pivot_wider(names_from = arb_kom, values_from = bo_percent, names_sort = TRUE) %>%
+  mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(bo_kom) %>%
+  select(
+    "bo. kom // Arb. kom" = bo_kom,
+    all_of(ordKom),
+    )
+p2022_arb_percent <- pmat_long %>%
+  filter(aar == 2022) %>%
+  group_by(arb_kom) %>%
+  mutate(total_arb = sum(pendlere)) %>%
+  ungroup() %>%
+  mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
+  select(arb_kom, bo_kom, arb_percent) %>%
+  pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
+  mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
+  arrange(arb_kom) |> 
+  select(-arb_kom)
+
+
+names(p2022_arb_percent)[1] <- "Arb. kom // bo. kom"
+```
+
+```{r}
+p2022 |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+```{r}
+p2022_percent |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+```{r}
+p2022_arb_percent |>
+flextable() |>
+# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+line_spacing(space = 0,
+part = "body"
+) %>%
+hrule(rule = "exact") %>%
+height_all(height = 5, part = "all", unit = "mm") |>
+padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
+theme_booktabs()
+```
+
+1\.
+Hvor mange pendlet fra Tysvær til Karmøy?
+
+657
+2.
+Hvor mange pendlet fra Karmøy til Tysvær?
+
+769
+3.
+Hvor mange pendlet fra Bokn til Karmøy?
+
+45
+4.
+Hvor mange pendlet fra Karmøy til Bokn?
+
+24
+5.
+Hvor mange pendlet fra Haugesund til Karmøy?
+
+2541
+6.
+Hvor mange pendlet fra Karmøy til Haugesund?
+
+5190
+7.
+Hvor stor andel av arbeidstakerne som jobbet i Karmøy i 2011 bodde i Haugesund kommune?
+
+23,2%
+8.
+Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2011 bodde i Karmøy kommune?
+
+15,8%
+
+```{r}
+pmat_long |>
+  filter(arb_kom == "Haugesund") |>
+  mutate(
+    år = ymd(str_c(aar, "12", "31")),
+    Bo andel = arb_percent,
+    Bo kom. = fct(as.character(bo_kom), levels = ordKom[!ordKom %in% c("bo_kom")])
+  ) |>
+  ggplot(aes(x = år, y = Bo andel, color = Bo kom., linetype = Bo kom., group = Bo kom.)) +
+  geom_line(linewidth = .8) +
+  scale_fill_discrete(ordKom[!ordKom %in% c("bo_kom")]) +
+  guides(
+    colour = guide_legend(title = "Bo andel", title.position = "top"),
+    linetype = guide_legend(title = "Bo andel", title.position = "top")
+  ) + 
+  theme(
+    legend.key.size = unit(2,"line"),
+    legend.position = "bottom"
+  )
+  ) + 
+  theme(
+    legend.key.size = unit(2,"line"),
+    legend.position = "bottom"
+  )
+```
