@@ -1,7 +1,47 @@
 ---
 title: "ag comments"
-format: html
+format: 
+  html: default
+  pdf: default
 editor: visual
 ---
 
--   
+-   Merk at print ikke har noe argument n, så `print(pend_00_22_boHland, n = 5)` vil gi en feilmelding.
+    Koden under fikser problemet (#\| eval: false må selvsagt fjernes).
+
+```{r}
+#| eval: false
+#| echo: fenced
+#| paged.print: false
+pend_00_22_boHland |> 
+  head(n = 5) |> 
+  print(width = 70)
+```
+
+-   La inn noen overskrifter Pendlematrise 2000 etc. for å lette navigering.
+
+-   Endret formlene for beregning av bo_percent og arb_percent. Innsett at det er mer fornuftig å velge antall desimaler når tabellene lages vha. colformat_double()
+
+-   Flytter ordKom til egen chunk
+
+-   Forelsår å generer tabellene «on-the-fly» fra pmat_long. Gir oss mindre «rot» i environment.
+
+-   Foreslår bruk av `set_flextable_defaults()`. Gir mindre kode og sikrer konsistente tabeller.
+
+-   Tabell for «andel av arbeidstakerne som jobbet i» synes å være transponert.
+
+-   Se ny tabell for «andel av arbeidstakerne som jobbet i» for svar på spørsmålene 5-7 for år 2000
+
+-   2012 for svar spørsmål 9-10 se svar i ny tabell (arb. kom. \\ bo kom.)
+
+-   2022 for svar spørsmål 7-8 se svar i ny tabell (arb. kom. \\ bo kom.)
+
+-   Fin besvarelse. Litt problem med tabellen «andel av arbeidstakerne som jobbet i». Se også mine forslag for forenkling av kode for tabellene. Godkjent.
+
+    	
+
+    			
+
+    		
+
+    	

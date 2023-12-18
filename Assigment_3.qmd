@@ -1,8 +1,13 @@
 ---
 title: "Assigment3"
-format: html
+format: 
+  html: default
+  pdf:
+    toc: true
 editor: visual
 language: nb.yaml
+##execute:
+##    echo: false
 ---
 
 ```{r}
@@ -85,9 +90,8 @@ pend_00_22_arbHland$arb_kom <- fct_collapse(pend_00_22_arbHland$arb_kom, Haugesu
                                       Karmøy = "Karmøy", 
                                       Etne = c("Etne", "Etne (-2019)"), 
                                       Sveio = c("Sveio", "Sveio (-2019)"), 
-                                      
-                                
-                                      Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
+                                      # ag_comment: Foreslår å endre til Vindafjord
+                                      Vindafjord = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
 
 #med hensyn på arb kommune
@@ -98,9 +102,8 @@ pend_00_22_arbHland$bo_kom <- fct_collapse(pend_00_22_arbHland$bo_kom, Haugesund
                                       Karmøy = "Karmøy", 
                                       Etne = c("Etne", "Etne (-2019)"), 
                                       Sveio = c("Sveio", "Sveio (-2019)"), 
-                                      
-                                
-                                      Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
+                                      # ag_comment: Foreslår å endre til Vindafjord
+                                      Vindafjord = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
 
 ####################
@@ -114,9 +117,8 @@ pend_00_22_boHland$arb_kom <- fct_collapse(pend_00_22_boHland$arb_kom, Haugesund
                                       Karmøy = "Karmøy", 
                                       Etne = c("Etne", "Etne (-2019)"), 
                                       Sveio = c("Sveio", "Sveio (-2019)"), 
-                                      
-                                
-                                      Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
+                                      # ag_comment: Foreslår å endre til Vindafjord
+                                      Vindafjord = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
 
 #med hensyn på bo kommune
@@ -127,16 +129,9 @@ pend_00_22_boHland$bo_kom <- fct_collapse(pend_00_22_boHland$bo_kom, Haugesund =
                                       Karmøy = "Karmøy", 
                                       Etne = c("Etne", "Etne (-2019)"), 
                                       Sveio = c("Sveio", "Sveio (-2019)"), 
-                                      
-                                
-                                      Vindafjord_Ølen = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
+                                      # ag_comment: Foreslår å endre til Vindafjord
+                                      Vindafjord = c("Vindafjord", "Vindafjord (1965-2005)", "Ølen (2002-2005)"),
                                       other_level = "Andre")
-
-
-
-
-
-
 ```
 
 ```{r}
@@ -157,8 +152,12 @@ dim(pend_00_22_arbHland)
 ```
 
 ```{r}
-print(pend_00_22_boHland, n = 5)
-
+#| paged.print: false
+# ag_comment: print har ikke noe argument n
+#print(pend_00_22_boHland, n = 5)
+pend_00_22_boHland |> 
+  head(n = 5) |> 
+  print(width = 70)
 ```
 
 ```{r}
@@ -188,22 +187,46 @@ pmat_long |>
 pmat_long <- pmat_long |> 
   group_by(bo_kom, aar) |> 
   mutate(
-    bo_percent = round((pendlere/sum(pendlere))*100, digits = 1)
+    #bo_percent = round((pendlere/sum(pendlere))*100, digits = 1)
+    bo_percent = (pendlere/sum(pendlere))*100
   ) |> 
   ungroup()
 pmat_long <- pmat_long |> 
   group_by(arb_kom, aar) |> 
   mutate(
-    arb_percent = round((pendlere/sum(pendlere))*100, digits = 1)
-  ) |> ungroup()
+    #arb_percent = round((pendlere/sum(pendlere))*100, digits = 1)
+    arb_percent = (pendlere/sum(pendlere))*100
+  ) |> 
+  ungroup()
+```
+
+## Pendlematrise 2000
+
+```{r}
+# ag_comment: forslår å endre fra Vindafjord_Ølen til Vindafjord
+ordKom <- c("bo_kom" , "Haugesund", "Karmøy", "Tysvær",
+"Sveio", "Bokn", "Vindafjord", "Sauda",
+"Etne", "Andre")
 ```
 
 ```{r}
-ordKom <- c("bo_kom" , "Haugesund", "Karmøy", "Tysvær",
-"Sveio", "Bokn", "Vindafjord_Ølen", "Sauda",
-"Etne", "Andre")
+set_flextable_defaults(
+     decimal.mark = ",",
+     big.mark = " ",
+     digits = 2,
+     line_spacing = 1,
+     padding.bottom = 2,
+     padding.top = 2,
+     padding.left = 2,
+     padding.right = 2,
+     theme_fun = "theme_booktabs"
+)
+```
+
+
+```{r}
 # Filtrer datasettet for år 2000 og transformer det til en bredere format
-p2000 <- pmat_long %>%
+pmat_long %>%
   filter(aar == 2000) %>%
   select(bo_kom, arb_kom, pendlere) %>%
   pivot_wider(names_from = arb_kom, values_from = pendlere, names_sort = TRUE) %>%
@@ -212,92 +235,74 @@ p2000 <- pmat_long %>%
   select(
     "Bo kom. \\ Arb. kom" = bo_kom,
     all_of(ordKom),
-    )
-
-
-
+    ) |> 
+  flextable() |>
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
 ```
 
 ```{r}
-p2000_percent <- pmat_long %>%
+pmat_long %>%
   filter(aar == 2000) %>%
-  group_by(bo_kom) %>%
-  mutate(total_pendlere = sum(pendlere)) %>%
-  ungroup() %>%
-  mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
+  #group_by(bo_kom) %>%
+  #mutate(total_pendlere = sum(pendlere)) %>%
+  #ungroup() %>%
+  # ag_comment: ikke nødvendig
+  # mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
   select(bo_kom, arb_kom, bo_percent) %>%
   pivot_wider(names_from = arb_kom, values_from = bo_percent, names_sort = TRUE) %>%
   mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
   arrange(bo_kom) %>%
   select(
-    "bo. kom // Arb. kom" = bo_kom,
+    "bo. kom \\ Arb. kom" = bo_kom,
     all_of(ordKom),
-    )
-
+    ) |> 
+  flextable() |>
+  # ag_comment: Velger 2 desimaler nøyaktighet og hiver på % tegn
+  colformat_double(digits = 2, suffix = "%") |> 
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
 ```
 
 ```{r}
-p2000_arb_percent <- pmat_long %>%
+pmat_long %>%
   filter(aar == 2000) %>%
-  group_by(arb_kom) %>%
-  mutate(total_arb = sum(pendlere)) %>%
-  ungroup() %>%
-  mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
+  # dette har vi gjort når vi lagde pmat_long
+  #group_by(arb_kom) %>%
+  #mutate(total_arb = sum(pendlere)) %>%
+  #ungroup() %>%
+  # ikke nødvendig
+  # mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
   select(arb_kom, bo_kom, arb_percent) %>%
-  pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
-  mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
-  arrange(arb_kom) |> 
-  select(-arb_kom, all_of(ordKom))
-
-
-names(p2000_arb_percent)[1] <- "Arb. kom // bo. kom"
-
-
-```
-
-```{r}
-
-p2000 |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
-
-```{r}
-
-p2000_percent |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
-
-```{r}
-
-p2000_arb_percent |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
+  pivot_wider(
+    #names_from = arb_kom, 
+    # ag_comment: endret til bo_kom
+    names_from = bo_kom,
+    values_from = arb_percent
+    # ag_comment: Vi sorterer etter ordKom
+    # names_sort = TRUE
+    ) %>%
+  #mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
+  #arrange(arb_kom) |> 
+  # ag_comment: forslår heller å bruke ordKom
+  # gjør arb_kom til character for å kunne lage factor med levels = ordKom
+  mutate(arb_kom = as.character(arb_kom)) |> 
+  arrange(fct(arb_kom, levels = ordKom[-1])) |> 
+  # ag_comment: endret fra -arb_kom til arb_kom
+  select(arb_kom, all_of(ordKom[-1])) |> 
+  # ag_comment: endret fra bo_kom til arb_kom
+  rename("arb. kom. \\ bo kom." = arb_kom) |> 
+  flextable() |>
+  # ag_comment: Velger 2 desimaler nøyaktighet og hiver på % tegn
+  colformat_double(digits = 2, suffix = "%") |> 
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
 ```
 
 Spørsmål Spørsmål vedrørende pendle/andels-matrisene for 2000
@@ -337,8 +342,11 @@ Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2000 bodde i Vindafjo
 
 3.2%
 
+## Pendlematrise 2012
+
 ```{r}
-p2012 <- pmat_long %>%
+# Filtrer datasettet for år 2012 og transformer det til en bredere format
+pmat_long %>%
   filter(aar == 2012) %>%
   select(bo_kom, arb_kom, pendlere) %>%
   pivot_wider(names_from = arb_kom, values_from = pendlere, names_sort = TRUE) %>%
@@ -347,125 +355,101 @@ p2012 <- pmat_long %>%
   select(
     "Bo kom. \\ Arb. kom" = bo_kom,
     all_of(ordKom),
-    )
-p2012_percent <- pmat_long %>%
+    ) |> 
+  flextable() |>
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
+```
+
+```{r}
+pmat_long %>%
   filter(aar == 2012) %>%
-  group_by(bo_kom) %>%
-  mutate(total_pendlere = sum(pendlere)) %>%
-  ungroup() %>%
-  mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
   select(bo_kom, arb_kom, bo_percent) %>%
   pivot_wider(names_from = arb_kom, values_from = bo_percent, names_sort = TRUE) %>%
   mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
   arrange(bo_kom) %>%
   select(
-    "bo. kom // Arb. kom" = bo_kom,
+    "bo. kom \\ Arb. kom" = bo_kom,
     all_of(ordKom),
-    )
-p2012_arb_percent <- pmat_long %>%
+    ) |> 
+  flextable() |>
+  # ag_comment: Velger 2 desimaler nøyaktighet og hiver på % tegn
+  colformat_double(digits = 2, suffix = "%") |> 
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
+```
+
+```{r}
+pmat_long %>%
   filter(aar == 2012) %>%
-  group_by(arb_kom) %>%
-  mutate(total_arb = sum(pendlere)) %>%
-  ungroup() %>%
-  mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
   select(arb_kom, bo_kom, arb_percent) %>%
-  pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
-  mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
-  arrange(arb_kom) |> 
-  select(-arb_kom)
-
-
-names(p2012_arb_percent)[1] <- "Arb. kom // bo. kom"
+  pivot_wider(
+    names_from = bo_kom,
+    values_from = arb_percent
+    ) %>%
+  mutate(arb_kom = as.character(arb_kom)) |> 
+  arrange(fct(arb_kom, levels = ordKom[-1])) |> 
+  select(arb_kom, all_of(ordKom[-1])) |> 
+  rename("arb. kom. \\ bo kom." = arb_kom) |> 
+  flextable() |>
+  # ag_comment: Velger 2 desimaler nøyaktighet og hiver på % tegn
+  colformat_double(digits = 2, suffix = "%") |> 
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
 ```
 
-```{r}
 
-p2012 |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
+1. Hvor mange pendlet fra Tysvær til Karmøy?
 
-```{r}
+421 
 
-p2012_percent |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
+2. Hvor mange pendlet fra Karmøy til Tysvær?
 
-```{r}
+569 
 
-p2012_arb_percent |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
+3. Hvor mange pendlet fra Bokn til Karmøy?
 
-1\.
-Hvor mange pendlet fra Tysvær til Karmøy?
+11 
 
-421
-2.
-Hvor mange pendlet fra Karmøy til Tysvær?
+4. Hvor mange pendlet fra Karmøy til Bokn?
 
-569
-3.
-Hvor mange pendlet fra Bokn til Karmøy?
+30 
 
-11
-4.
-Hvor mange pendlet fra Karmøy til Bokn?
+5. Hvor mange pendlet fra Haugesund til Karmøy?
 
-30
-5.
-Hvor mange pendlet fra Haugesund til Karmøy?
+2077 
 
-2077
-6.
-Hvor mange pendlet fra Karmøy til Haugesund?
+6. Hvor mange pendlet fra Karmøy til Haugesund?
 
-5201
-7.
-Hvor stor andel av arbeidstakerene som bodde i Sveio kommune i 2012 jobbet i Tysvær kommune?
+5201 
 
-4,7%
-8.
-Hvor stor andel av arbeidstakerene som bodde i Tysvær kommune i 2012 jobbet i Karmøy kommune?
+7. Hvor stor andel av arbeidstakerene som bodde i Sveio kommune i 2012 jobbet i Tysvær kommune?
 
-7,7 %
-9.
-Hvor stor andel av arbeidstakerne som jobbet i Karmøy i 20112bodde i Haugesund kommune?
+4,7% 
 
-23,7%
-10.
-Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2012 bodde i Karmøy kommune?
+8. Hvor stor andel av arbeidstakerene som bodde i Tysvær kommune i 2012 jobbet i Karmøy kommune?
+
+7,7 % 
+
+9. Hvor stor andel av arbeidstakerne som jobbet i Karmøy i 2012 bodde i Haugesund kommune?
+
+23,7% 
+
+10. Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2012 bodde i Karmøy kommune?
 
 13,9%
 
+## Pendlematrise 2022
+
 ```{r}
-p2022 <- pmat_long %>%
+# Filtrer datasettet for år 2022 og transformer det til en bredere format
+pmat_long %>%
   filter(aar == 2022) %>%
   select(bo_kom, arb_kom, pendlere) %>%
   pivot_wider(names_from = arb_kom, values_from = pendlere, names_sort = TRUE) %>%
@@ -474,109 +458,85 @@ p2022 <- pmat_long %>%
   select(
     "Bo kom. \\ Arb. kom" = bo_kom,
     all_of(ordKom),
-    )
-p2022_percent <- pmat_long %>%
+    ) |> 
+  flextable() |>
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
+```
+
+```{r}
+pmat_long %>%
   filter(aar == 2022) %>%
-  group_by(bo_kom) %>%
-  mutate(total_pendlere = sum(pendlere)) %>%
-  ungroup() %>%
-  mutate(bo_percent = round((pendlere / total_pendlere) * 100, 1)) %>%
   select(bo_kom, arb_kom, bo_percent) %>%
   pivot_wider(names_from = arb_kom, values_from = bo_percent, names_sort = TRUE) %>%
   mutate(bo_kom = factor(bo_kom, levels = ordKom)) %>%
   arrange(bo_kom) %>%
   select(
-    "bo. kom // Arb. kom" = bo_kom,
+    "bo. kom \\ Arb. kom" = bo_kom,
     all_of(ordKom),
-    )
-p2022_arb_percent <- pmat_long %>%
+    ) |> 
+  flextable() |>
+  # ag_comment: Velger 2 desimaler nøyaktighet og hiver på % tegn
+  colformat_double(digits = 2, suffix = "%") |> 
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
+```
+
+```{r}
+pmat_long %>%
   filter(aar == 2022) %>%
-  group_by(arb_kom) %>%
-  mutate(total_arb = sum(pendlere)) %>%
-  ungroup() %>%
-  mutate(arb_percent = round((pendlere / total_arb) * 100, 1)) %>%
   select(arb_kom, bo_kom, arb_percent) %>%
-  pivot_wider(names_from = arb_kom, values_from = arb_percent, names_sort = TRUE) %>%
-  mutate(arb_kom = factor(bo_kom, levels = ordKom)) %>%
-  arrange(arb_kom) |> 
-  select(-arb_kom)
-
-
-names(p2022_arb_percent)[1] <- "Arb. kom // bo. kom"
+  pivot_wider(
+    names_from = bo_kom,
+    values_from = arb_percent
+    ) %>%
+  mutate(arb_kom = as.character(arb_kom)) |> 
+  arrange(fct(arb_kom, levels = ordKom[-1])) |> 
+  select(arb_kom, all_of(ordKom[-1])) |> 
+  rename("arb. kom. \\ bo kom." = arb_kom) |> 
+  flextable() |>
+  # ag_comment: Velger 2 desimaler nøyaktighet og hiver på % tegn
+  colformat_double(digits = 2, suffix = "%") |> 
+  # a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
+  fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
+  hrule(rule = "exact") %>%
+  height_all(height = 5, part = "all", unit = "mm")
 ```
 
-```{r}
-p2022 |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
 
-```{r}
-p2022_percent |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
+1. Hvor mange pendlet fra Tysvær til Karmøy?
 
-```{r}
-p2022_arb_percent |>
-flextable() |>
-# a4 8.268 in - 1 in left margin - 1 in right margin = 6.268 in
-fit_to_width(max_width = 6.268, inc = 1L, max_iter = 20, unit = "in") |>
-line_spacing(space = 0,
-part = "body"
-) %>%
-hrule(rule = "exact") %>%
-height_all(height = 5, part = "all", unit = "mm") |>
-padding(padding.top = 1, padding.bottom = 2, part = "all") %>%
-theme_booktabs()
-```
+657 
 
-1\.
-Hvor mange pendlet fra Tysvær til Karmøy?
+2. Hvor mange pendlet fra Karmøy til Tysvær?
 
-657
-2.
-Hvor mange pendlet fra Karmøy til Tysvær?
+769 
 
-769
-3.
-Hvor mange pendlet fra Bokn til Karmøy?
+3. Hvor mange pendlet fra Bokn til Karmøy?
 
-45
-4.
-Hvor mange pendlet fra Karmøy til Bokn?
+45 
 
-24
-5.
-Hvor mange pendlet fra Haugesund til Karmøy?
+4. Hvor mange pendlet fra Karmøy til Bokn?
 
-2541
-6.
-Hvor mange pendlet fra Karmøy til Haugesund?
+24 
 
-5190
-7.
-Hvor stor andel av arbeidstakerne som jobbet i Karmøy i 2011 bodde i Haugesund kommune?
+5. Hvor mange pendlet fra Haugesund til Karmøy?
 
-23,2%
-8.
-Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2011 bodde i Karmøy kommune?
+2541 
+
+6. Hvor mange pendlet fra Karmøy til Haugesund?
+
+5190 
+
+7. Hvor stor andel av arbeidstakerne som jobbet i Karmøy i 2011 bodde i Haugesund kommune?
+
+23,2% 
+
+8. Hvor stor andel av arbeidstakerne som jobbet i Haugesund i 2011 bodde i Karmøy kommune?
 
 15,8%
 
@@ -657,9 +617,7 @@ pmat_long |>
   )
 ```
 
-Oppgave
-Lag tilsvarende plot som det ovenfor, men for utviklingen for dem som bor i kommunene Haugesund,
-Karmøy, Tysvær og Bokn.
+Oppgave Lag tilsvarende plot som det ovenfor, men for utviklingen for dem som bor i kommunene Haugesund, Karmøy, Tysvær og Bokn.
 Det såkalte T-sambandet åpnet i 2013.
 Bompengeinnkreving ble avviklet i 2021.
 Diskuter ut fra tabellene og plottene dere laget ovenfor om det er mulig å se noen effekt på pendlemønsteret mellom de fire kommunene fra dette prosjektet (T-sambandet).
